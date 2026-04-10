@@ -12,7 +12,6 @@ jobs:
       skip_build: ${{ steps.check.outputs.skip_build }}
       skip_lint: ${{ steps.check.outputs.skip_lint }}
     steps:
-      - run: pnpm i
       - id: check
         run: |
           echo "skip_build=true" >> "$GITHUB_OUTPUT"
