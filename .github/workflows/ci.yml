@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      skip_build: ${{ steps.check.outputs.skip_build }}
+      skip_lint: ${{ steps.check.outputs.skip_lint }}
+    steps:
+      - run: pnpm i
+      - id: check
+        run: |
+          echo "skip_build=true" >> "$GITHUB_OUTPUT"
+          echo "skip_lint=false" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: gate
+    if: needs.gate.outputs.skip_build != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo building
+
+  lint:
+    needs: gate
+    if: needs.gate.outputs.skip_lint != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo linting
